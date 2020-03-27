@@ -20,6 +20,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:maxWidth="300dp"
             android:padding="10dp"
             android:text="mennasaber0193@gmail.com"

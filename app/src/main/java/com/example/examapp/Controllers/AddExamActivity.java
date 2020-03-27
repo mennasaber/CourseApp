@@ -1,8 +1,10 @@
-package com.example.examapp;
+package com.example.examapp.Controllers;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.examapp.R;
 
 public class AddExamActivity extends AppCompatActivity {
 

@@ -1,9 +1,11 @@
-package com.example.examapp;
+package com.example.examapp.Controllers;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.Menu;
+
+import com.example.examapp.R;
 
 public class CourseActivity extends AppCompatActivity {
 

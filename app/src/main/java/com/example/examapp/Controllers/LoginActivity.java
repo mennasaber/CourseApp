@@ -1,18 +1,22 @@
-package com.example.examapp;
+package com.example.examapp.Controllers;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.examapp.Models.User;
+import com.example.examapp.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -26,42 +30,47 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
-    Button login ;
-    EditText emailLoginET , passwordLoginET;
+    Button login;
+    EditText emailLoginET, passwordLoginET;
     TextView dontHaveAccountTV;
-    GoogleSignInClient googleSignInClient ;
-    SignInButton googleSignup ;
-    DatabaseReference databaseReference ;
+    GoogleSignInClient googleSignInClient;
+    SignInButton googleSignup;
+    DatabaseReference databaseReference;
+    private FirebaseAuth mAuth;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         emailLoginET = findViewById(R.id.emailLoginET);
-        googleSignup=findViewById(R.id.googleSignup);
+        googleSignup = findViewById(R.id.googleSignup);
         dontHaveAccountTV = findViewById(R.id.dontHaveAccountTV);
         passwordLoginET = findViewById(R.id.passwordLoginET);
-        login=findViewById(R.id.signInButton);
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users") ;
+        login = findViewById(R.id.signInButton);
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).
                 requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
-        googleSignInClient = GoogleSignIn.getClient(this , gso) ;
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
-
-        mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if (firebaseAuth.getCurrentUser() != null){
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                    finish();
-                }
-            }
-        });
+        if (mAuth.getCurrentUser() != null) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+        }
+//        mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+//            @Override
+//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+//                if (firebaseAuth.getCurrentUser() != null) {
+//                    checkIfExist(firebaseAuth.getCurrentUser());
+//                }
+//            }
+//        });
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-            if (requestCode == 2) {
+        if (requestCode == 2) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSingInResult(task);
         }
@@ -129,16 +138,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void FirebaseGoogleAuth(GoogleSignInAccount account) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken() , null) ;
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
+                if (task.isSuccessful()) {
                     Toast.makeText(getApplicationContext(), "Succeeded ", Toast.LENGTH_SHORT).show();
                     FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                    updateUI(firebaseUser);
-                }
-                else {
+                    assert firebaseUser != null;
+                    checkIfExist(firebaseUser);
+                } else {
                     Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_SHORT).show();
                     updateUI(null);
                 }
@@ -146,15 +155,45 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void updateUI(FirebaseUser firebaseUser) {
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-        if (account!=null){
-            DatabaseReference mDatabaseReference = databaseReference.child(firebaseUser.getUid());
-            User user = new User(account.getDisplayName()
-                    ,firebaseUser.getUid(),account.getPhotoUrl().toString(),account.getEmail(),false);
-            mDatabaseReference.setValue(user);
-            startActivity(new Intent(getApplicationContext(),MainActivity.class));
-            finish();
+    private void updateUI(final FirebaseUser firebaseUser) {
+        final GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+        if (account != null) {
+            final Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.dialog_is_teacher);
+            dialog.show();
+
+            Button button = dialog.findViewById(R.id.buttonOK);
+            final CheckBox checkBox = dialog.findViewById(R.id.checkBoxIsStudent);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DatabaseReference mDatabaseReference = databaseReference.child(firebaseUser.getUid());
+                    User user = new User(account.getDisplayName()
+                            , firebaseUser.getUid(), account.getPhotoUrl().toString(), account.getEmail(), !checkBox.isChecked());
+                    mDatabaseReference.setValue(user);
+                    dialog.dismiss();
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                }
+            });
         }
+    }
+
+    private void checkIfExist(final FirebaseUser firebaseUser) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                } else
+                    updateUI(firebaseUser);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 }

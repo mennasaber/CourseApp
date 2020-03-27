@@ -10,13 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".SignupActivity"/>
-        <activity android:name=".CourseActivity" />
-        <activity android:name=".AddExamActivity" />
-        <activity android:name=".AddCourseActivity" />
-        <activity android:name=".QuestionsActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".Controllers.SignupActivity"/>
+        <activity android:name=".Controllers.CourseActivity" />
+        <activity android:name=".Controllers.AddExamActivity" />
+        <activity android:name=".Controllers.AddCourseActivity" />
+        <activity android:name=".Controllers.QuestionsActivity" />
+        <activity android:name=".Controllers.MainActivity" />
+        <activity android:name=".Controllers.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

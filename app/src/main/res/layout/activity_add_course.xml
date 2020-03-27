@@ -3,67 +3,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:fillViewport="true"
     android:layout_height="match_parent"
-    android:background="@drawable/background_multi">
+    android:background="@drawable/background_multi"
+    android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".AddCourseActivity">
+        android:layout_height="wrap_content"
+        tools:context=".Controllers.AddCourseActivity">
 
         <EditText
             android:id="@+id/courseNameET"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="100dp"
             android:background="@drawable/roundedeeditext"
             android:hint="Course name"
             android:padding="10dp"
+            android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/studentEmailET"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/roundedeeditext"
-            android:hint="Student email"
-            android:padding="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/courseNameET" />
-
         <Button
-            android:id="@+id/addStudentButton"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/roundedbttn"
-            android:text="ADD"
-            android:textColor="@android:color/white"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.37"
-            app:layout_constraintStart_toEndOf="@+id/studentEmailET"
-            app:layout_constraintTop_toBottomOf="@+id/courseNameET" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="15dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/studentEmailET" />
-
-        <Button
+            android:id="@+id/addCourseButton"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
             android:background="@drawable/roundedbttn"
             android:padding="10dp"
@@ -71,8 +38,9 @@
             android:textColor="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerView"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toBottomOf="@+id/courseNameET"
+            app:layout_constraintVertical_bias="0.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
